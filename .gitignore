@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+dataset/
+raw_dataset/
+static/uploads/
+*.h5
