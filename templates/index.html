@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fruit Quality Classifier</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🍎 Fruit Quality Classifier 🍌</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*" required>
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if image_path %}
+        <h3>Uploaded Image:</h3>
+        <img src="{{ url_for('static', filename=image_path.split('static/')[-1]) }}" class="preview">
+        {% endif %}
+
+        {% if result %}
+        <div class="result {{ 'good' if result == 'Good' else 'bad' }}">
+            Prediction: The fruit is {{ result.upper() }} ({{ confidence }}%)
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
