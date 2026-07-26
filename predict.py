@@ -1,0 +1,69 @@
+"""
+Fruit Quality Detection - Prediction Script
+Matches Chapter 5 (Implementation) of the project report:
+ - 5.1.1 Load the trained model and define class labels
+ - 5.1.2 Preprocess and predict image
+ - 5.1.3 Determine if the fruit is good or bad
+ - 5.1.4 Display image and prediction
+"""
+
+import cv2
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+# ----------------------------------------------------------------------
+# 5.1.1 Load the trained model and define class labels
+# ----------------------------------------------------------------------
+model = tf.keras.models.load_model("fruit_classifier_model.h5")
+
+class_labels = [
+    "Good Orange", "Bad Orange",
+    "Good Apple", "Bad Apple",
+    "Good Pomegranate", "Bad Pomegranate"
+]
+
+
+# ----------------------------------------------------------------------
+# 5.1.2 Preprocess and predict image
+# ----------------------------------------------------------------------
+def predict_fruit(image_path):
+    IMG_SIZE = 100
+    img = cv2.imread(image_path)
+    if img is None:
+        print("Error: Unable to load image.")
+        return
+
+    img = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+    img = img / 255.0
+    img = np.expand_dims(img, axis=0)
+
+    prediction = model.predict(img)
+    predicted_class = np.argmax(prediction)
+    confidence = np.max(prediction) * 100
+
+    # ------------------------------------------------------------------
+    # 5.1.3 Determine if the fruit is good or bad
+    # ------------------------------------------------------------------
+    if "Bad" in class_labels[predicted_class]:
+        fruit_quality = "Bad"
+    else:
+        fruit_quality = "Good"
+
+    # ------------------------------------------------------------------
+    # 5.1.4 Display image and prediction
+    # ------------------------------------------------------------------
+    plt.imshow(cv2.cvtColor(cv2.imread(image_path), cv2.COLOR_BGR2RGB))
+    plt.axis("off")
+    plt.title(f"Prediction: {fruit_quality} ({confidence:.2f}%)")
+    plt.show()
+
+    return fruit_quality, confidence, class_labels[predicted_class]
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) < 2:
+        print("Usage: python predict.py <path_to_image>")
+    else:
+        predict_fruit(sys.argv[1])
